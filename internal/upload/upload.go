@@ -572,7 +572,7 @@ func AnnounceDiscord(upReq Request, upload Upload, r *http.Request, source strin
 		return
 	}
 
-	expiry := ""
+	var expiry string
 	if upReq.expiry.Microseconds() != 0 {
 		expiry = "<t:" + strconv.FormatInt(time.Now().Unix()+int64(upReq.expiry.Seconds()), 10) + ":R>"
 	} else {
@@ -589,6 +589,13 @@ func AnnounceDiscord(upReq Request, upload Upload, r *http.Request, source strin
 		filename = "unknown"
 	}
 
+	var sizeBytes uint64
+	if upReq.size > 0 {
+		sizeBytes = uint64(upReq.size)
+	}
+
+	const inline = "inline"
+
 	payload := map[string]any{
 		"embeds": []map[string]any{
 			{
@@ -596,11 +603,11 @@ func AnnounceDiscord(upReq Request, upload Upload, r *http.Request, source strin
 				"url":   headers.GetFileURL(r, upload.Filename).String(),
 				"color": 0x3498db,
 				"fields": []map[string]any{
-					{"name": "Original file name", "value": filename, "inline": true},
-					{"name": "From", "value": from, "inline": true},
-					{"name": "Expires", "value": expiry, "inline": true},
-					{"name": "Size", "value": humanize.Bytes(uint64(upReq.size)), "inline": true},
-					{"name": "Source", "value": source, "inline": true},
+					{"name": "Original file name", "value": filename, inline: true},
+					{"name": "From", "value": from, inline: true},
+					{"name": "Expires", "value": expiry, inline: true},
+					{"name": "Size", "value": humanize.Bytes(sizeBytes), inline: true},
+					{"name": "Source", "value": source, inline: true},
 				},
 			},
 		},
@@ -612,11 +619,22 @@ func AnnounceDiscord(upReq Request, upload Upload, r *http.Request, source strin
 		return
 	}
 
-	resp, err := http.Post(
-		config.Default.DiscordWebhook,
-		"application/json",
-		bytes.NewBuffer(jsonData),
-	)
+	var ctx context.Context
+	if r != nil {
+		ctx = r.Context()
+	} else {
+		ctx = context.Background()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, config.Default.DiscordWebhook, bytes.NewBuffer(jsonData))
+	if err != nil {
+		slog.Warn("Unable to create Discord webhook request: " + err.Error())
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
 		slog.Warn("Unable to send Discord webhook: " + err.Error())
 		return
