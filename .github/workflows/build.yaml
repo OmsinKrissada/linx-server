@@ -126,7 +126,7 @@ jobs:
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
           AUR_SSH_KEY: ${{ secrets.AUR_SSH_KEY }}
       - name: Push beta image
-        if: github.ref_name == 'main'
+        # if: github.ref_name == 'main'
         run: |
           docker image ls
           export REPO="$(tr '[[:upper:]]' '[[:lower:]]' <<< "ghcr.io/$GITHUB_REPOSITORY")"
@@ -141,8 +141,9 @@ jobs:
                 .Repository + ":" + .Tag
               ')
 
-          docker manifest create "$REPO:beta" "${IMAGES[@]}"
-          docker manifest push "$REPO:beta"
+          echo "${IMAGES[@]}"
+          # docker manifest create "$REPO:beta" "${IMAGES[@]}"
+          # docker manifest push "$REPO:beta"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: dist
