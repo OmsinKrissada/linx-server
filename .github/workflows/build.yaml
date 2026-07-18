@@ -136,7 +136,7 @@ jobs:
           done \
             < <(docker image ls --format=json | \
               yq --input-format=json --no-doc '
-                select(.Repository == strenv(REPO) and .Tag == "beta-*") |
+                select(.Repository == strenv(REPO) and (.Tag =~ "^beta-")) |
                 .Repository + ":" + .Tag
               ')
 
