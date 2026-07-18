@@ -594,20 +594,35 @@ func AnnounceDiscord(upReq Request, upload Upload, r *http.Request, source strin
 		sizeBytes = uint64(upReq.size)
 	}
 
-	const inline = "inline"
+	type discordField struct {
+		Name   string `json:"name"`
+		Value  string `json:"value"`
+		Inline bool   `json:"inline"`
+	}
 
-	payload := map[string]any{
-		"embeds": []map[string]any{
+	type discordEmbed struct {
+		Title  string         `json:"title"`
+		URL    string         `json:"url"`
+		Color  int            `json:"color"`
+		Fields []discordField `json:"fields"`
+	}
+
+	type discordPayload struct {
+		Embeds []discordEmbed `json:"embeds"`
+	}
+
+	payload := discordPayload{
+		Embeds: []discordEmbed{
 			{
-				"title": "New File Uploaded",
-				"url":   headers.GetFileURL(r, upload.Filename).String(),
-				"color": 0x3498db,
-				"fields": []map[string]any{
-					{"name": "Original file name", "value": filename, inline: true},
-					{"name": "From", "value": from, inline: true},
-					{"name": "Expires", "value": expiry, inline: true},
-					{"name": "Size", "value": humanize.Bytes(sizeBytes), inline: true},
-					{"name": "Source", "value": source, inline: true},
+				Title: "New File Uploaded",
+				URL:   headers.GetFileURL(r, upload.Filename).String(),
+				Color: 0x3498db,
+				Fields: []discordField{
+					{Name: "Original file name", Value: filename, Inline: true},
+					{Name: "From", Value: from, Inline: true},
+					{Name: "Expires", Value: expiry, Inline: true},
+					{Name: "Size", Value: humanize.Bytes(sizeBytes), Inline: true},
+					{Name: "Source", Value: source, Inline: true},
 				},
 			},
 		},
@@ -626,7 +641,12 @@ func AnnounceDiscord(upReq Request, upload Upload, r *http.Request, source strin
 		ctx = context.Background()
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, config.Default.DiscordWebhook, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		config.Default.DiscordWebhook,
+		bytes.NewBuffer(jsonData),
+	)
 	if err != nil {
 		slog.Warn("Unable to create Discord webhook request: " + err.Error())
 		return
