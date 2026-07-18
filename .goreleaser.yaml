@@ -140,7 +140,7 @@ changelog:
 #       email: bot@goreleaser.com
 dockers_v2:
   - images:
-      - ghcr.io/OmsinKrissada/{{ .ProjectName }}
+      - ghcr.io/omsinkrissada/{{ .ProjectName }}
     tags:
       - "{{ if not .IsSnapshot }}{{ .Version }}{{ end }}"
       - "{{ if not .IsSnapshot }}{{ .Major }}.{{ .Minor }}{{ end }}"
