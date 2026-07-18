@@ -67,80 +67,80 @@ changelog:
       regexp: "(fix|perf)"
     - title: Others
       order: 999
-brews:
-  - homepage: https://github.com/gabe565/linx-server
-    description: Self-hosted file/media sharing website
-    license: GPL-3.0
-    repository:
-      owner: gabe565
-      name: homebrew-tap
-    directory: Formula
-    install: |
-      bin.install "linx-server"
-      man1.install Dir["manpages/*"]
-      bash_completion.install "completions/linx-server.bash" => "linx-server"
-      zsh_completion.install "completions/linx-server.zsh" => "_linx-server"
-      fish_completion.install "completions/linx-server.fish"
-nfpms:
-  - id: packages
-    vendor: Gabe Cook
-    homepage: https://github.com/gabe565/linx-server
-    description: Self-hosted file/media sharing website
-    license: GPL-3.0
-    maintainer: Gabe Cook <gabe565@gmail.com>
-    formats:
-      - deb
-      - rpm
-    contents:
-      - src: ./manpages/
-        dst: /usr/share/man/man1
-        file_info:
-          mode: 0644
-      - src: ./completions/linx-server.bash
-        dst: /usr/share/bash-completion/completions/linx-server
-        file_info:
-          mode: 0644
-      - src: ./completions/linx-server.fish
-        dst: /usr/share/fish/vendor_completions.d/linx-server.fish
-        file_info:
-          mode: 0644
-      - src: ./completions/linx-server.zsh
-        dst:  /usr/share/zsh/vendor-completions/_linx-server
-        file_info:
-          mode: 0644
-publishers:
-  - name: fury.io
-    ids:
-      - packages
-    dir: "{{ dir .ArtifactPath }}"
-    cmd: curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/
-aurs:
-  - name: linx-server-bin
-    homepage: https://github.com/gabe565/linx-server
-    description: Self-hosted file/media sharing website
-    maintainers:
-      - Gabe Cook <gabe565@gmail.com>
-    license: GPL-3.0
-    private_key: '{{ .Env.AUR_SSH_KEY }}'
-    git_url: ssh://aur@aur.archlinux.org/linx-server-bin.git
-    skip_upload: auto
-    package: |-
-      # bin
-      install -Dm755 "./linx-server" "${pkgdir}/usr/bin/linx-server"
-      # license
-      install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/linx-server/LICENSE"
-      # man pages
-      install -Dm644 -t"${pkgdir}/usr/share/man/man1" manpages/*
-      # completions
-      install -Dm644 "./completions/linx-server.bash" "${pkgdir}/usr/share/bash-completion/completions/linx-server"
-      install -Dm644 "./completions/linx-server.zsh" "${pkgdir}/usr/share/zsh/site-functions/_linx-server"
-      install -Dm644 "./completions/linx-server.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/linx-server.fish"
-    commit_author:
-      name: goreleaserbot
-      email: bot@goreleaser.com
+# brews:
+#   - homepage: https://github.com/gabe565/linx-server
+#     description: Self-hosted file/media sharing website
+#     license: GPL-3.0
+#     repository:
+#       owner: gabe565
+#       name: homebrew-tap
+#     directory: Formula
+#     install: |
+#       bin.install "linx-server"
+#       man1.install Dir["manpages/*"]
+#       bash_completion.install "completions/linx-server.bash" => "linx-server"
+#       zsh_completion.install "completions/linx-server.zsh" => "_linx-server"
+#       fish_completion.install "completions/linx-server.fish"
+# nfpms:
+#   - id: packages
+#     vendor: Gabe Cook
+#     homepage: https://github.com/gabe565/linx-server
+#     description: Self-hosted file/media sharing website
+#     license: GPL-3.0
+#     maintainer: Gabe Cook <gabe565@gmail.com>
+#     formats:
+#       - deb
+#       - rpm
+#     contents:
+#       - src: ./manpages/
+#         dst: /usr/share/man/man1
+#         file_info:
+#           mode: 0644
+#       - src: ./completions/linx-server.bash
+#         dst: /usr/share/bash-completion/completions/linx-server
+#         file_info:
+#           mode: 0644
+#       - src: ./completions/linx-server.fish
+#         dst: /usr/share/fish/vendor_completions.d/linx-server.fish
+#         file_info:
+#           mode: 0644
+#       - src: ./completions/linx-server.zsh
+#         dst:  /usr/share/zsh/vendor-completions/_linx-server
+#         file_info:
+#           mode: 0644
+# publishers:
+#   - name: fury.io
+#     ids:
+#       - packages
+#     dir: "{{ dir .ArtifactPath }}"
+#     cmd: curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/
+# aurs:
+#   - name: linx-server-bin
+#     homepage: https://github.com/gabe565/linx-server
+#     description: Self-hosted file/media sharing website
+#     maintainers:
+#       - Gabe Cook <gabe565@gmail.com>
+#     license: GPL-3.0
+#     private_key: '{{ .Env.AUR_SSH_KEY }}'
+#     git_url: ssh://aur@aur.archlinux.org/linx-server-bin.git
+#     skip_upload: auto
+#     package: |-
+#       # bin
+#       install -Dm755 "./linx-server" "${pkgdir}/usr/bin/linx-server"
+#       # license
+#       install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/linx-server/LICENSE"
+#       # man pages
+#       install -Dm644 -t"${pkgdir}/usr/share/man/man1" manpages/*
+#       # completions
+#       install -Dm644 "./completions/linx-server.bash" "${pkgdir}/usr/share/bash-completion/completions/linx-server"
+#       install -Dm644 "./completions/linx-server.zsh" "${pkgdir}/usr/share/zsh/site-functions/_linx-server"
+#       install -Dm644 "./completions/linx-server.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/linx-server.fish"
+#     commit_author:
+#       name: goreleaserbot
+#       email: bot@goreleaser.com
 dockers_v2:
   - images:
-      - ghcr.io/gabe565/{{ .ProjectName }}
+      - ghcr.io/omsinkrissada/{{ .ProjectName }}
     tags:
       - "{{ if not .IsSnapshot }}{{ .Version }}{{ end }}"
       - "{{ if not .IsSnapshot }}{{ .Major }}.{{ .Minor }}{{ end }}"
