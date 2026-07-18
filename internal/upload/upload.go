@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -29,6 +30,7 @@ import (
 	"gabe565.com/linx-server/internal/util"
 	"gabe565.com/utils/bytefmt"
 	"github.com/dchest/uniuri"
+	"github.com/dustin/go-humanize"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/go-chi/chi/v5"
 	"github.com/gosimple/slug"
@@ -160,6 +162,8 @@ func POSTHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	AnnounceDiscord(upReq, upload, r, "POST")
+
 	w.Header().Set("Vary", "Accept")
 
 	if strings.EqualFold("application/json", r.Header.Get("Accept")) {
@@ -185,6 +189,8 @@ func PUTHandler(w http.ResponseWriter, r *http.Request) {
 		HandleProcessError(w, r, err)
 		return
 	}
+
+	AnnounceDiscord(upReq, upload, r, "PUT")
 
 	w.Header().Set("Vary", "Accept")
 	if strings.EqualFold("application/json", r.Header.Get("Accept")) {
@@ -291,6 +297,8 @@ func Remote(w http.ResponseWriter, r *http.Request) {
 		HandleProcessError(w, r, err)
 		return
 	}
+
+	AnnounceDiscord(upReq, upload, r, "Remote")
 
 	w.Header().Set("Cache-Control", "no-store")
 
@@ -557,4 +565,66 @@ func ParseExpiry(expStr string) time.Duration {
 	}
 
 	return min(fileExpiry, config.Default.MaxExpiry.Duration)
+}
+
+func AnnounceDiscord(upReq Request, upload Upload, r *http.Request, source string) {
+	if config.Default.DiscordWebhook == "" {
+		return
+	}
+
+	expiry := ""
+	if upReq.expiry.Microseconds() != 0 {
+		expiry = "<t:" + strconv.FormatInt(time.Now().Unix()+int64(upReq.expiry.Seconds()), 10) + ":R>"
+	} else {
+		expiry = "never"
+	}
+
+	from := "unknown"
+	if r != nil {
+		from = r.RemoteAddr
+	}
+
+	filename := upReq.filename
+	if filename == "" {
+		filename = "unknown"
+	}
+
+	payload := map[string]any{
+		"embeds": []map[string]any{
+			{
+				"title": "New File Uploaded",
+				"url":   headers.GetFileURL(r, upload.Filename).String(),
+				"color": 0x3498db,
+				"fields": []map[string]any{
+					{"name": "Original file name", "value": filename, "inline": true},
+					{"name": "From", "value": from, "inline": true},
+					{"name": "Expires", "value": expiry, "inline": true},
+					{"name": "Size", "value": humanize.Bytes(uint64(upReq.size)), "inline": true},
+					{"name": "Source", "value": source, "inline": true},
+				},
+			},
+		},
+	}
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		slog.Warn("Unable to marshal Discord webhook payload: " + err.Error())
+		return
+	}
+
+	resp, err := http.Post(
+		config.Default.DiscordWebhook,
+		"application/json",
+		bytes.NewBuffer(jsonData),
+	)
+	if err != nil {
+		slog.Warn("Unable to send Discord webhook: " + err.Error())
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		body, _ := io.ReadAll(resp.Body)
+		slog.Warn("Unable to send Discord webhook: status " + resp.Status + ": " + string(body))
+	}
 }

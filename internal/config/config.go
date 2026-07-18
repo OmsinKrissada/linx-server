@@ -47,6 +47,8 @@ type Config struct {
 	S3     S3     `toml:"s3"     comment:"S3-compatible storage configuration"`
 	Limit  Limit  `toml:"limit"  comment:"Configure rate limits"`
 	Header Header `toml:"header" comment:"Modify request/response headers"`
+
+	DiscordWebhook string `toml:"discord-webhook" comment:"Discord webhook URL for notifying file uploads"`
 }
 
 func (c *Config) AppKeys() []string {
@@ -106,6 +108,7 @@ func New() *Config {
 		S3: S3{
 			PresignedExpiry: Duration{6 * time.Hour},
 		},
+		DiscordWebhook: "",
 		Limit: Limit{
 			UploadMaxRequests: 5,
 			UploadInterval:    Duration{15 * time.Second},

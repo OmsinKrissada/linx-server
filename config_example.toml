@@ -43,6 +43,8 @@ custom-pages-path = ''
 app-key = ''
 # Previously-used app-keys, still accepted during rotation.
 app-previous-keys = []
+# Discord webhook URL for notifying file uploads
+discord-webhook = ''
 
 # TLS (HTTPS) configuration
 [tls]
