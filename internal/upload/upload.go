@@ -33,6 +33,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gosimple/slug"
 )
 
@@ -581,7 +582,7 @@ func AnnounceDiscord(upReq Request, upload Upload, r *http.Request, source strin
 
 	from := "unknown"
 	if r != nil {
-		from = r.RemoteAddr
+		from = middleware.GetClientIP(r.Context())
 	}
 
 	filename := upReq.filename
