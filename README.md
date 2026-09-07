@@ -1,6 +1,14 @@
 # linx-server
 
-[![Build](https://github.com/gabe565/linx-server/actions/workflows/build.yaml/badge.svg)](https://github.com/gabe565/linx-server/actions/workflows/build.yaml)
+> [!NOTE]
+> This is a fork of [gabe565/linx-server](https://github.com/gabe565/linx-server) by [OmsinKrissada](https://github.com/OmsinKrissada/).
+
+**Features added by this fork**
+- Discord webhook notification on file upload
+
+---
+
+[![Build](https://github.com/OmsinKrissada/linx-server/actions/workflows/build.yaml/badge.svg)](https://github.com/OmsinKrissada/linx-server/actions/workflows/build.yaml)
 
 Self-hosted file/media sharing website.
 
@@ -74,7 +82,7 @@ Ideally, you would use a reverse proxy such as nginx or caddy to handle TLS cert
 
 ### Using a binary release
 
-1. Grab the latest binary from the [releases](https://github.com/gabe565/linx-server/releases)
+1. Grab the latest binary from the [releases](https://github.com/OmsinKrissada/linx-server/releases)
 2. Run `linx-server --config=path/to/config.toml`
 
 

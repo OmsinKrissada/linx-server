@@ -37,7 +37,7 @@
               <Button
                 as="a"
                 variant="ghost"
-                href="https://github.com/gabe565/linx-server"
+                href="https://github.com/OmsinKrissada/linx-server"
                 target="_blank"
                 class="rounded-full"
               >
