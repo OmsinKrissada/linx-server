@@ -97,6 +97,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --alert-note: oklch(54.6% 0.245 262.881);
+  --alert-tip: oklch(62.7% 0.194 149.214);
+  --alert-important: oklch(55.8% 0.288 302.321);
+  --alert-warning: oklch(66.6% 0.179 58.318);
+  --alert-caution: oklch(57.7% 0.245 27.325);
 }
 
 .dark {
@@ -131,6 +136,11 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.439 0 0);
+  --alert-note: oklch(70.7% 0.165 254.624);
+  --alert-tip: oklch(79.2% 0.209 151.711);
+  --alert-important: oklch(71.4% 0.203 305.504);
+  --alert-warning: oklch(82.8% 0.189 84.429);
+  --alert-caution: oklch(70.4% 0.191 22.216);
 }
 
 @layer base {
@@ -150,6 +160,60 @@ button,
 
 .prose {
   @apply dark:prose-invert prose-neutral prose-blue max-w-none;
+}
+
+.prose .table-wrap,
+.prose [data-slot="table-container"] {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+}
+
+.prose .table-wrap {
+  margin-block: 2em;
+}
+
+.prose .table-wrap > table,
+.prose [data-slot="table-container"] > table {
+  width: max-content;
+  min-width: 100%;
+  margin-block: 0;
+}
+
+.prose table {
+  border-collapse: collapse;
+  font-variant: tabular-nums;
+}
+
+.prose :is(th, td) {
+  border: 1px solid var(--border);
+  padding-inline: 0.875rem;
+  padding-block: 0.5rem;
+  vertical-align: middle;
+  text-align: start;
+  white-space: normal;
+  color: inherit;
+}
+
+.prose th {
+  font-weight: 600;
+}
+
+.prose tbody tr:nth-child(even) {
+  background-color: color-mix(in oklab, var(--muted) 45%, transparent);
+}
+
+/* Keep records copyable: never break one across lines. */
+.prose :is(th, td) code {
+  white-space: nowrap;
+}
+
+/* Capped so an oversized value scrolls in place instead of widening the table. */
+.prose :is(th, td) pre {
+  margin: 0;
+  max-width: 30rem;
+  overflow: auto;
+  padding-inline: 0.6rem;
+  padding-block: 0.4rem;
 }
 
 @utility link {
