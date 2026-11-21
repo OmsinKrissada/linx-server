@@ -100,8 +100,17 @@ func (u Upload) JSONResponse(r *http.Request) JSONResponse {
 
 func POSTHandler(w http.ResponseWriter, r *http.Request) {
 	siteURL := headers.GetSiteURL(r).String()
-	if !csrf.StrictReferrerCheck(r, siteURL,
-		[]string{"Linx-Delete-Key", "Linx-Expiry", "Linx-Randomize", BurnAfterReadHeader, PublicHeader, "X-Requested-With"},
+	if !csrf.StrictReferrerCheck(
+		r,
+		siteURL,
+		[]string{
+			"Linx-Delete-Key",
+			"Linx-Expiry",
+			"Linx-Randomize",
+			BurnAfterReadHeader,
+			PublicHeader,
+			"X-Requested-With",
+		},
 	) {
 		handlers.Error(w, r, http.StatusBadRequest)
 		return

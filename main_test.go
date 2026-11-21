@@ -1079,7 +1079,12 @@ func TestBrowseListsOnlyPublic(t *testing.T) {
 
 	put := func(name string, public bool) {
 		w := httptest.NewRecorder()
-		req, err := http.NewRequestWithContext(t.Context(), http.MethodPut, "/upload/"+name, strings.NewReader("File content"))
+		req, err := http.NewRequestWithContext(
+			t.Context(),
+			http.MethodPut,
+			"/upload/"+name,
+			strings.NewReader("File content"),
+		)
 		require.NoError(t, err)
 		req.Header.Set("Accept", "application/json")
 		req.Header.Set(upload.PublicHeader, strconv.FormatBool(public))
