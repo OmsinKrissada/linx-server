@@ -43,6 +43,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		Error(w, r, http.StatusInternalServerError)
 		return
 	}
+	InvalidateBrowse()
 
 	w.Header().Set("Vary", "Accept, Linx-Delete-Key")
 	_, _ = io.WriteString(w, "DELETED\n")

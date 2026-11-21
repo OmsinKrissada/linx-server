@@ -493,6 +493,7 @@ func Process(ctx context.Context, upReq Request) (Upload, error) {
 	if err != nil {
 		return upload, err
 	}
+	handlers.InvalidateBrowse()
 	upload.Metadata.DeleteKey = upReq.deleteKey
 	upload.Metadata.AccessKey = upReq.accessKey
 

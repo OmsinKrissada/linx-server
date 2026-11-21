@@ -17,6 +17,7 @@ func Burn(ctx context.Context, fileName string) {
 	if err := config.StorageBackend.Delete(ctx, fileName); err != nil {
 		slog.Error("Failed to delete burn-after-read file", "path", fileName, "error", err)
 	}
+	InvalidateBrowse()
 }
 
 // prepareBurnRequest forces a full response, since there won't be a second one.

@@ -1101,4 +1101,11 @@ func TestBrowseListsOnlyPublic(t *testing.T) {
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &files))
 	require.Len(t, files, 1)
 	assert.Equal(t, "shown.txt", files[0].Filename)
+
+	// The listing is cached, but an upload must show up right away.
+	put("later.txt", true)
+	w = httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &files))
+	assert.Len(t, files, 2)
 }
