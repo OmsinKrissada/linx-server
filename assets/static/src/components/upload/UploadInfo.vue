@@ -58,6 +58,12 @@
         <TableCell>Burn After Reading</TableCell>
         <TableCell>Deleted after the first view</TableCell>
       </TableRow>
+      <TableRow v-if="item.public">
+        <TableCell>Public</TableCell>
+        <TableCell>
+          <RouterLink to="/browse" class="link">Listed on Browse</RouterLink>
+        </TableCell>
+      </TableRow>
       <TableRow v-if="item.uploaded">
         <TableCell>Uploaded</TableCell>
         <TableCell>{{ new Date(item.uploaded).toLocaleString() }}</TableCell>

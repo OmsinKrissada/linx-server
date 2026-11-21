@@ -23,6 +23,14 @@ const router = createRouter({
       },
     },
     {
+      path: "/browse",
+      name: "Browse",
+      component: () => import("../views/BrowseView.vue"),
+      meta: {
+        navigation: true,
+      },
+    },
+    {
       path: "/api",
       name: "API",
       component: () => import("../views/APIView.vue"),

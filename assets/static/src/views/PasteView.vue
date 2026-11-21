@@ -53,10 +53,15 @@
               :options="config.site?.expiration_times"
               class="w-full sm:w-40"
             />
-            <BurnToggle v-model="config.burnAfterRead" />
+            <div class="flex gap-4">
+              <BurnToggle v-model="config.burnAfterRead" />
+              <PublicToggle v-model="config.isPublic" />
+            </div>
             <Button type="submit">Paste</Button>
           </div>
         </div>
+
+        <PublicWarning v-if="config.isPublic && !config.password" />
 
         <Alert v-if="config.editTargetFilename && !canOverwriteExisting">
           <InfoIcon />
@@ -101,6 +106,8 @@ import AuthDialog from "@/components/upload/AuthDialog.vue";
 import BurnToggle from "@/components/upload/BurnToggle.vue";
 import ExpirySelect from "@/components/upload/ExpirySelect.vue";
 import PasswordInput from "@/components/upload/PasswordInput.vue";
+import PublicToggle from "@/components/upload/PublicToggle.vue";
+import PublicWarning from "@/components/upload/PublicWarning.vue";
 import { useConfigStore } from "@/stores/config.ts";
 import { useUploadStore } from "@/stores/upload.ts";
 import InfoIcon from "~icons/material-symbols/info-rounded";
@@ -124,6 +131,7 @@ const doUpload = async () => {
             expiry: config.expiry,
             password: config.password,
             burnAfterRead: config.burnAfterRead,
+            isPublic: config.isPublic,
             saveOriginalName: false,
           })
         : await upload.uploadFile({
@@ -131,6 +139,7 @@ const doUpload = async () => {
             expiry: config.expiry,
             password: config.password,
             burnAfterRead: config.burnAfterRead,
+            isPublic: config.isPublic,
             saveOriginalName: false,
           });
 

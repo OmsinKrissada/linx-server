@@ -54,6 +54,7 @@ type Request struct {
 	randomBarename bool
 	accessKey      string // Empty string if not defined
 	burnAfterRead  bool   // Delete the file after it is first downloaded
+	public         bool   // Show the file in the public listing
 }
 
 // Metadata associated with a file as it would actually be stored.
@@ -74,6 +75,7 @@ type JSONResponse struct {
 	Size          string `json:"size"`
 	Mimetype      string `json:"mimetype"`
 	BurnAfterRead bool   `json:"burn_after_read,omitzero"`
+	Public        bool   `json:"public,omitzero"`
 }
 
 func (u Upload) JSONResponse(r *http.Request) JSONResponse {
@@ -92,13 +94,14 @@ func (u Upload) JSONResponse(r *http.Request) JSONResponse {
 		Size:          strconv.FormatInt(u.Metadata.Size, 10),
 		Mimetype:      u.Metadata.Mimetype,
 		BurnAfterRead: u.Metadata.BurnAfterRead,
+		Public:        u.Metadata.Public,
 	}
 }
 
 func POSTHandler(w http.ResponseWriter, r *http.Request) {
 	siteURL := headers.GetSiteURL(r).String()
 	if !csrf.StrictReferrerCheck(r, siteURL,
-		[]string{"Linx-Delete-Key", "Linx-Expiry", "Linx-Randomize", BurnAfterReadHeader, "X-Requested-With"},
+		[]string{"Linx-Delete-Key", "Linx-Expiry", "Linx-Randomize", BurnAfterReadHeader, PublicHeader, "X-Requested-With"},
 	) {
 		handlers.Error(w, r, http.StatusBadRequest)
 		return
@@ -154,6 +157,8 @@ func POSTHandler(w http.ResponseWriter, r *http.Request) {
 			upReq.randomBarename = util.ParseBool(string(b), false)
 		case BurnAfterReadParam:
 			upReq.burnAfterRead = util.ParseBool(string(b), false)
+		case PublicParam:
+			upReq.public = util.ParseBool(string(b), false)
 		}
 	}
 
@@ -298,6 +303,7 @@ func Remote(w http.ResponseWriter, r *http.Request) {
 	upReq.randomBarename = util.ParseBool(r.FormValue("randomize"), false)
 	upReq.expiry = ParseExpiry(r.FormValue("expiry"))
 	upReq.burnAfterRead = util.ParseBool(r.FormValue(BurnAfterReadParam), false)
+	upReq.public = util.ParseBool(r.FormValue(PublicParam), false)
 
 	upload, err := Process(r.Context(), upReq)
 	if err != nil {
@@ -327,11 +333,14 @@ func Remote(w http.ResponseWriter, r *http.Request) {
 const (
 	BurnAfterReadHeader = "Linx-Burn-After-Read"
 	BurnAfterReadParam  = "burn_after_read"
+	PublicHeader        = "Linx-Public"
+	PublicParam         = "public"
 )
 
 func HeaderProcess(r *http.Request, upReq *Request) {
 	upReq.randomBarename = util.ParseBool(r.Header.Get("Linx-Randomize"), false)
 	upReq.burnAfterRead = util.ParseBool(r.Header.Get(BurnAfterReadHeader), false)
+	upReq.public = util.ParseBool(r.Header.Get(PublicHeader), false)
 
 	upReq.deleteKey = util.TryPathUnescape(r.Header.Get("Linx-Delete-Key"))
 	upReq.accessKey = util.TryPathUnescape(r.Header.Get(handlers.AccessKeyHeader))
@@ -479,6 +488,7 @@ func Process(ctx context.Context, upReq Request) (Upload, error) {
 		AccessKey:     storedAccessKey,
 		Salt:          salt,
 		BurnAfterRead: upReq.burnAfterRead,
+		Public:        upReq.public,
 	})
 	if err != nil {
 		return upload, err

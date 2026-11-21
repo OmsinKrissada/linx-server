@@ -18,6 +18,7 @@ const (
 	Salt          = "salt"
 	Expiry        = "expiry"
 	BurnAfterRead = "burnafterread"
+	Public        = "public"
 )
 
 func mapMetadata(m backends.Metadata) map[string]string {
@@ -36,6 +37,9 @@ func mapMetadata(m backends.Metadata) map[string]string {
 	}
 	if m.BurnAfterRead {
 		mapped[BurnAfterRead] = "true"
+	}
+	if m.Public {
+		mapped[Public] = "true"
 	}
 	return mapped
 }
@@ -72,6 +76,8 @@ func unmapMetadata(info minio.ObjectInfo) (backends.Metadata, error) {
 			m.Mimetype = v
 		case BurnAfterRead:
 			m.BurnAfterRead = util.ParseBool(v, false)
+		case Public:
+			m.Public = util.ParseBool(v, false)
 		case Expiry:
 			b, err := json.Marshal(v)
 			if err != nil {

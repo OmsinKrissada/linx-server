@@ -138,6 +138,7 @@ func Setup() (*chi.Mux, error) {
 	r.Group(func(r chi.Router) {
 		r.Use(rateLimit(config.Default.Limit.FileMaxRequests, config.Default.Limit.FileInterval.Duration))
 
+		r.Get("/api/browse", handlers.Browse)
 		r.Get("/{name}", handlers.FileAccessHandler)
 		r.Post("/{name}", handlers.FileAccessHandler)
 	})
@@ -161,7 +162,7 @@ func Setup() (*chi.Mux, error) {
 		http.ServeContent(w, r, "config.json", config.TimeStarted, bytes.NewReader(b))
 	})
 
-	for _, p := range append(customPages, "Paste", "API") {
+	for _, p := range append(customPages, "Paste", "Browse", "API") {
 		r.Get("/"+strings.ToLower(p), handlers.AssetHandler(template.WithTitle(p)))
 	}
 

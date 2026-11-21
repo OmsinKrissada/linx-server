@@ -17,8 +17,12 @@
             :options="config.site?.expiration_times"
             class="w-full sm:w-40"
           />
-          <BurnToggle v-model="config.burnAfterRead" />
+          <div class="flex gap-4">
+            <BurnToggle v-model="config.burnAfterRead" />
+            <PublicToggle v-model="config.isPublic" />
+          </div>
         </div>
+        <PublicWarning v-if="config.isPublic && !config.password" />
         <DropZone @upload="doUpload" :max-file-size="config.site?.max_size" />
       </CardContent>
     </Card>
@@ -40,6 +44,8 @@ import BurnToggle from "@/components/upload/BurnToggle.vue";
 import DropZone from "@/components/upload/DropZone.vue";
 import ExpirySelect from "@/components/upload/ExpirySelect.vue";
 import PasswordInput from "@/components/upload/PasswordInput.vue";
+import PublicToggle from "@/components/upload/PublicToggle.vue";
+import PublicWarning from "@/components/upload/PublicWarning.vue";
 import UploadList from "@/components/upload/UploadList.vue";
 import { useConfigStore } from "@/stores/config.ts";
 import { useUploadStore } from "@/stores/upload.ts";
@@ -59,6 +65,7 @@ const doUpload = async (file: File | undefined) => {
       expiry: config.expiry,
       password: config.password,
       burnAfterRead: config.burnAfterRead,
+      isPublic: config.isPublic,
     });
   } catch (err) {
     console.error(err);

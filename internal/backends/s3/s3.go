@@ -183,6 +183,7 @@ func (b Backend) Put(
 		Mimetype:      mime.String(),
 		Expiry:        opts.Expiry,
 		BurnAfterRead: opts.BurnAfterRead,
+		Public:        opts.Public,
 	}
 
 	info, err := b.client.PutObject(ctx, b.bucket, key, r, size, minio.PutObjectOptions{

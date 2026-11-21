@@ -18,6 +18,7 @@ type Metadata struct {
 	Expiry        time.Time
 	ArchiveFiles  []string
 	BurnAfterRead bool
+	Public        bool
 }
 
 var ErrBadMetadata = errors.New("corrupted metadata")

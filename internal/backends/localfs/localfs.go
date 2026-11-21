@@ -33,6 +33,7 @@ type MetadataJSON struct {
 	Expiry        backends.Expiry `json:"expiry,omitzero"`
 	ArchiveFiles  []string        `json:"archive_files,omitzero"`
 	BurnAfterRead bool            `json:"burn_after_read,omitzero"`
+	Public        bool            `json:"public,omitzero"`
 }
 
 func (b Backend) Claim(ctx context.Context, key string) (bool, error) {
@@ -157,6 +158,7 @@ func (b Backend) Head(_ context.Context, key string) (backends.Metadata, error) 
 	}
 	metadata.Expiry = time.Time(mjson.Expiry)
 	metadata.BurnAfterRead = mjson.BurnAfterRead
+	metadata.Public = mjson.Public
 
 	if stat, err := f.Stat(); err == nil {
 		metadata.ModTime = stat.ModTime()
@@ -213,6 +215,7 @@ func (b Backend) writeMetadata(key string, metadata backends.Metadata) error {
 		Checksum:      metadata.Checksum,
 		Expiry:        backends.Expiry(metadata.Expiry),
 		BurnAfterRead: metadata.BurnAfterRead,
+		Public:        metadata.Public,
 	}
 
 	metaRoot, err := os.OpenRoot(b.metaPath)
@@ -296,6 +299,7 @@ func (b Backend) Put(
 	m.AccessKey = opts.AccessKey
 	m.Salt = opts.Salt
 	m.BurnAfterRead = opts.BurnAfterRead
+	m.Public = opts.Public
 
 	if _, err := f.Seek(0, io.SeekStart); err == nil {
 		m.ArchiveFiles, _ = helpers.ListArchiveFiles(m.Mimetype, m.Size, f)

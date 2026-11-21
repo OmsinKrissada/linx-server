@@ -25,6 +25,7 @@ export type UploadedItem = {
   size: number;
   mimetype?: string;
   burn_after_read?: boolean;
+  public?: boolean;
 };
 
 const MaxDelay = 2 ** 31 - 1;
@@ -138,6 +139,7 @@ export const useUploadStore = defineStore(
       randomFilename = false,
       password,
       burnAfterRead = false,
+      isPublic = false,
       saveOriginalName = true,
     }: {
       file: File;
@@ -145,6 +147,7 @@ export const useUploadStore = defineStore(
       randomFilename?: boolean;
       password?: string;
       burnAfterRead?: boolean;
+      isPublic?: boolean;
       saveOriginalName?: boolean;
     }) => {
       const controller = new AbortController();
@@ -165,6 +168,7 @@ export const useUploadStore = defineStore(
       if (password) form.append("access_key", password);
       form.append("randomize", randomFilename.toString());
       if (burnAfterRead) form.append("burn_after_read", "true");
+      if (isPublic) form.append("public", "true");
       // This field must be last since it is streamed
       form.append("file", file);
 
@@ -201,6 +205,7 @@ export const useUploadStore = defineStore(
       expiry,
       password,
       burnAfterRead = false,
+      isPublic = false,
       saveOriginalName = true,
     }: {
       file: File;
@@ -209,6 +214,7 @@ export const useUploadStore = defineStore(
       expiry: number | string;
       password?: string;
       burnAfterRead?: boolean;
+      isPublic?: boolean;
       saveOriginalName?: boolean;
     }) => {
       return await runUploadRequest({
@@ -224,6 +230,7 @@ export const useUploadStore = defineStore(
               "Linx-Expiry": encodeURIComponent(String(expiry)),
               "Linx-Access-Key": encodeURIComponent(password ?? ""),
               "Linx-Burn-After-Read": String(burnAfterRead),
+              "Linx-Public": String(isPublic),
             },
             validateStatus: (s) => s === 200,
           }),

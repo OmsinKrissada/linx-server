@@ -1073,3 +1073,32 @@ func TestPostBurnAfterRead(t *testing.T) {
 	assertResponse(t, w, http.StatusOK, "application/json")
 	assert.Contains(t, w.Body.String(), `"burn_after_read":true`)
 }
+
+func TestBrowseListsOnlyPublic(t *testing.T) {
+	r, _ := setup(t, nil)
+
+	put := func(name string, public bool) {
+		w := httptest.NewRecorder()
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodPut, "/upload/"+name, strings.NewReader("File content"))
+		require.NoError(t, err)
+		req.Header.Set("Accept", "application/json")
+		req.Header.Set(upload.PublicHeader, strconv.FormatBool(public))
+		r.ServeHTTP(w, req)
+		assertResponse(t, w, http.StatusOK, "application/json")
+	}
+	put("shown.txt", true)
+	put("hidden.txt", false)
+
+	w := httptest.NewRecorder()
+	req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, "/api/browse", nil)
+	require.NoError(t, err)
+	r.ServeHTTP(w, req)
+	assertResponse(t, w, http.StatusOK, "application/json")
+
+	var files []struct {
+		Filename string `json:"filename"`
+	}
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &files))
+	require.Len(t, files, 1)
+	assert.Equal(t, "shown.txt", files[0].Filename)
+}

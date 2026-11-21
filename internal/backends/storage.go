@@ -42,6 +42,7 @@ type PutOptions struct {
 	AccessKey     string
 	Salt          string
 	BurnAfterRead bool
+	Public        bool
 }
 
 // ClaimPrefix is prepended to a key to name its burn-after-read claim.

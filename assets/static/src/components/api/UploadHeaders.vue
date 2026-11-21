@@ -56,6 +56,10 @@ const config = useConfigStore();
         <TableCell><code>Linx-Burn-After-Read: yes</code></TableCell>
         <TableCell>Delete the file after it is downloaded once</TableCell>
       </TableRow>
+      <TableRow>
+        <TableCell><code>Linx-Public: yes</code></TableCell>
+        <TableCell>List the file on the public Browse page</TableCell>
+      </TableRow>
       <TableRow v-if="!config.site.force_random">
         <TableCell><code>Linx-Randomize: no</code></TableCell>
         <TableCell>Disable random filename</TableCell>
